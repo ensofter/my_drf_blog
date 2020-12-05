@@ -5,8 +5,12 @@ from taggit_serializer.serializers import TagListSerializerField, TaggitSerializ
 
 class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
 
-    tag = TagListSerializerField()
+    tags = TagListSerializerField()
 
     class Meta:
         model = Post
-        fields = ("id", "h1", "title", "url", "description", "content", "image", "created_at", "author", "tag")
+        fields = ("id", "h1", "title", "slug", "description", "content", "image", "created_at", "author", "tags")
+        lookup_field = 'slug'
+        extra_kwargs = {
+            'url': {'lookup_field': 'slug'}
+        }
