@@ -2,8 +2,11 @@ from rest_framework import viewsets
 from .serializers import PostSerializer, TagSerializer
 from .models import Post
 from taggit.models import Tag
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from rest_framework import pagination
+from rest_framework import generics
+
 
 
 class PageNumberSetPagination(pagination.PageNumberPagination):
@@ -20,8 +23,12 @@ class PostViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberSetPagination
 
 
-class TagViewSet(viewsets.ModelViewSet):
-    serializer_class = TagSerializer
-    queryset = Tag.objects.all()
-    lookup_field = 'slug'
+class TagDetailView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    pagination_class = PageNumberSetPagination
     permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        tag_slug = self.kwargs['tag_slug'].lower()
+        tag = Tag.objects.get(slug=tag_slug)
+        return Post.objects.filter(tags=tag)
