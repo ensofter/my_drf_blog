@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils import timezone
 from ckeditor_uploader.fields import RichTextUploadingField
 from taggit.managers import TaggableManager
+from django.contrib.auth.models import User
 
 
 class Post(models.Model):
@@ -13,7 +14,7 @@ class Post(models.Model):
     content = RichTextUploadingField()
     image = models.ImageField()
     created_at = models.DateField(default=timezone.now)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     tags = TaggableManager()
 
     def __str__(self):
