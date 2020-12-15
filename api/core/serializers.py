@@ -30,3 +30,9 @@ class TagSerializer(serializers.ModelSerializer):
         }
 
 
+class ContactSerailizer(serializers.Serializer):
+    name = serializers.CharField()
+    email = serializers.CharField()
+    subject = serializers.CharField()
+    message = serializers.CharField()
+
