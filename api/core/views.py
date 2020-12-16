@@ -8,6 +8,7 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from django.core.mail import send_mail
 from rest_framework.response import Response
+from rest_framework import filters
 
 
 class PageNumberSetPagination(pagination.PageNumberPagination):
@@ -17,6 +18,8 @@ class PageNumberSetPagination(pagination.PageNumberPagination):
 
 
 class PostViewSet(viewsets.ModelViewSet):
+    search_fields = ['content', 'h1']
+    filter_backends = (filters.SearchFilter,)
     serializer_class = PostSerializer
     queryset = Post.objects.all()
     lookup_field = 'slug'
@@ -48,7 +51,6 @@ class AsideView(generics.ListAPIView):
 
 
 class FeedBackView(APIView):
-    print("HOPA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     permission_classes = [permissions.AllowAny]
     serializer_class = ContactSerailizer
 
