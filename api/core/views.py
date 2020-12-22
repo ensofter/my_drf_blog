@@ -9,6 +9,8 @@ from rest_framework.views import APIView
 from django.core.mail import send_mail
 from rest_framework.response import Response
 from rest_framework import filters
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import status
 
 
 class PageNumberSetPagination(pagination.PageNumberPagination):
@@ -78,3 +80,27 @@ class RegisterView(generics.GenericAPIView):
             "user": UserSerializer(user, context=self.get_serializer_context()).data,
             "message": "Пользователь успешно создан",
         })
+
+
+class ProfileView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = UserSerializer
+
+    def get(self, request, *args,  **kwargs):
+        return Response({
+            "user": UserSerializer(request.user, context=self.get_serializer_context()).data,
+        })
+
+
+class LogoutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        try:
+            print(request.data)
+            refresh_token = request.data["refresh_token"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
