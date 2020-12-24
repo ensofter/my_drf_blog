@@ -83,24 +83,10 @@ class RegisterView(generics.GenericAPIView):
 
 
 class ProfileView(generics.GenericAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer
 
     def get(self, request, *args,  **kwargs):
         return Response({
             "user": UserSerializer(request.user, context=self.get_serializer_context()).data,
         })
-
-
-class LogoutView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def post(self, request):
-        try:
-            print(request.data)
-            refresh_token = request.data["refresh_token"]
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response(status=status.HTTP_205_RESET_CONTENT)
-        except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
