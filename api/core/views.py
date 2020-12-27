@@ -1,6 +1,6 @@
 from rest_framework import viewsets
-from .serializers import PostSerializer, TagSerializer, ContactSerailizer, RegisterSerializer, UserSerializer
-from .models import Post
+from .serializers import PostSerializer, TagSerializer, ContactSerailizer, RegisterSerializer, UserSerializer, CommentSerializer
+from .models import Post, Comment
 from taggit.models import Tag
 from rest_framework import permissions
 from rest_framework import pagination
@@ -9,8 +9,6 @@ from rest_framework.views import APIView
 from django.core.mail import send_mail
 from rest_framework.response import Response
 from rest_framework import filters
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import status
 
 
 class PageNumberSetPagination(pagination.PageNumberPagination):
@@ -90,3 +88,20 @@ class ProfileView(generics.GenericAPIView):
         return Response({
             "user": UserSerializer(request.user, context=self.get_serializer_context()).data,
         })
+
+
+class AddCommentView(generics.CreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class GetCommentsView(generics.ListAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        post_slug = self.kwargs['post_slug'].lower()
+        post = Post.objects.get(slug=post_slug)
+        return Comment.objects.filter(post=post)
